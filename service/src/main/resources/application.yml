@@ -1,0 +1,16 @@
+spring:
+    profiles:
+        active: dev
+    jpa:
+        database: MySQL
+        show-sql: false
+    jcasbin:
+        model-path: conf/rbac_with_resource_roles.conf
+server:
+    servlet:
+        context-path: /cmdb/torn-mcloud/
+        session:
+            timeout: 864000
+    compression:
+        enabled: true
+        mime-types: text/javascript,application/javascript,text/css
