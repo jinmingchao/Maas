@@ -1,0 +1,11 @@
+{
+  "groups": [],
+  "properties": [
+    {
+      "name": "spring.jcasbin.model-path",
+      "type": "java.lang.String",
+      "description": "casbin model path."
+    }
+  ],
+  "hints": []
+}

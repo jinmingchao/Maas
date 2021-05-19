@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties
+//@ConfigurationProperties
 public class LoginRedirectConfig {
     @Value("${spring.bk-login.api}")
     private String api;

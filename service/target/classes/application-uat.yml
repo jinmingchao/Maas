@@ -1,0 +1,10 @@
+spring:
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://mysql-uat:3306/mcloud?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT
+    bk-login:
+        dev: false
+        dev-username: admin
+        api: http://torn-maas-paas:8003/
+        redirect: http://login.test.tg.unicom.local/
+        cookie: bk_token

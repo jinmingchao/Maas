@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties
+//@ConfigurationProperties
 public class CasbinEnforcerEntity {
     @Value("${spring.datasource.url}")
     private String url;
@@ -15,8 +15,8 @@ public class CasbinEnforcerEntity {
     private String username;
     @Value("${spring.datasource.password}")
     private String password;
-    @Value("${spring.jcasbin.model-path}")
-    private String modelPath;
+//    @Value("${spring.jcasbin.model-path}")
+//    private String modelPath;
 
     public String getUrl() {
         return url;
@@ -50,17 +50,17 @@ public class CasbinEnforcerEntity {
         this.password = password;
     }
 
-    public String getModelPath() {
-        return modelPath;
-    }
-
-    public void setModelPath(String modelPath) {
-        this.modelPath = modelPath;
-    }
+//    public String getModelPath() {
+//        return modelPath;
+//    }
+//
+//    public void setModelPath(String modelPath) {
+//        this.modelPath = modelPath;
+//    }
 
     @Override
     public String toString() {
         return "EnforcerConfigProperties [url=" + url + ", driverClassName=" + driverClassName + ", username="
-                + username + ", password=" + password + ", modelPath=" + modelPath + "]";
+                + username + ", password=" + password + ", modelPath=" + "]";
     }
 }
