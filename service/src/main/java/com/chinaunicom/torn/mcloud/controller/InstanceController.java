@@ -39,6 +39,7 @@ import com.chinaunicom.torn.mcloud.service.LoggerService;
 import com.chinaunicom.torn.mcloud.service.ProjectService;
 import com.chinaunicom.torn.mcloud.service.UserService;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -470,38 +471,39 @@ public class InstanceController {
 
 
     @GetMapping(path = "/{AREA_ID}")
+    @ApiOperation(value = "获取某区域所有主机列表/获取某区域某装机批次的主机列表/查看某区域装机中列表 ")
     public List<InstanceMessage> getInstances(
             @PathVariable(name = "AREA_ID") String areaKey,
             @RequestParam(name = "batchId", required = false) Integer batchId,
             @RequestParam(name = "installing", required = false) Boolean installing) {
         InstanceEntity filter = InstanceEntity.factoryBuilder(areaKey);
 
-        if (installing != null) {
+        if (installing != null) { // 查看某区域装机中列表: http://localhost:8000/api/instance/888?installing=true
             List<InstanceEntity> installingInstance = this.installingService.getInstallingInstance(areaKey);
-            filter.setStatus("安装失败");
-            installingInstance.addAll(this.instanceService.getInstances(Example.of(filter)));
+            filter.setStatus("安装失败");//过滤出安装失败的机器
+            installingInstance.addAll(this.instanceService.getInstances(Example.of(filter)));//安装失败的放在正在安装的后面
 
             return this.transferInstanceEntityToMessage(areaKey, installingInstance.stream(), true);
         }
 
         Set<String> batchSn = null;
-        if (batchId != null) {
+        if (batchId != null) {// 获取某装机批次的主机列表: http://localhost:8000/api/instance/888?batchId=8
             batchSn = this.installService.getBatchSNSet(batchId);
         }
 
         final Set<String> refBatchSn = batchSn;
         return this.transferInstanceEntityToMessage(areaKey, this.instanceService.getInstances(Example.of(filter))
                 .stream()
-                .filter(instance -> {
+                .filter(instance -> {//如果入参有batchId,则返回某批次下所有主机列表,否则返回该区域所有主机列表
                     if (refBatchSn == null) {
                         return true;
                     }
-
                     return refBatchSn.contains(instance.getSn());
                 }), false);
     }
 
     @PostMapping(path = "/{AREA_ID}/sync")
+    @ApiOperation(value = "手动触发同步某区域下所有主机")
     public String syncInstances(@PathVariable(name = "AREA_ID") String areaId) {
         this.loggerService.operationLog(InstanceController.logFactory.product().how("webapi").what("/api/instance/" + areaId + "/sync").build());
 
@@ -515,6 +517,7 @@ public class InstanceController {
     }
 
     @GetMapping(path = "/{SN}/install_history")
+    @ApiOperation(value = "查看某主机装机历史")
     public List<InstanceInstallOpLogEntity> getInstallHistory(@PathVariable(name = "SN") String sn) {
         InstanceInstallOpLogEntity filter = new InstanceInstallOpLogEntity();
         filter.setSn(sn);
@@ -559,6 +562,7 @@ public class InstanceController {
     }
 
     @GetMapping(path = "/{SN}/detail")
+    @ApiOperation(value = "获取某主机的详细信息")
     public InstanceEntity detail(@PathVariable(name = "SN") String sn) {
         Optional<InstanceEntity> instance = this.instanceService.getInstanceDao().findById(sn);
         if (instance.isPresent()) {

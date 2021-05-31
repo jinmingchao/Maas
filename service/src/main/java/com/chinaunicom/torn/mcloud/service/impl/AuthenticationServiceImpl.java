@@ -49,13 +49,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         token.get().setId(areaEntity.getId());
         token.get().setDefaultCloudbootNetworkId(areaEntity.getDefaultCloudbootNetworkId());
-        this.cloudbootTokens.put(areaEntity.getId(), token.get());
-        this.cloudbootTokens.forEach( (key, tk) -> {
-
-                System.out.println(key);
-                System.out.println(tk.getToken());
-                }
-        );
+        this.cloudbootTokens.put(areaEntity.getId(), token.get());//Key: 每个cloudboot area 区域ID
+                                                                  //Value: 每个区域对应的cloudboot area对象, 存map
+//        this.cloudbootTokens.forEach( (key, tk) -> {
+//
+//                System.out.println(key);
+//                System.out.println(tk.getToken());
+//            System.out.println();
+//                }
+//        );
         return true;
     }
 

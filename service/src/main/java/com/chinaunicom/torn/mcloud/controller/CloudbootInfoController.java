@@ -23,6 +23,7 @@ import com.chinaunicom.torn.mcloud.service.LoggerService;
 import com.chinaunicom.torn.mcloud.service.PermissionService;
 import com.chinaunicom.torn.mcloud.service.ProjectService;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -192,6 +193,7 @@ public class CloudbootInfoController {
     @Autowired
     private BaremetalService baremetalService;
 
+    @ApiOperation(value = "获取某区域硬件模板信息(RAID+OOB)* ")
     @GetMapping(path = "/{AREA_ID}/hardware")
     public List<SimpleHardwareMessage> getAreaHardware(@PathVariable(name = "AREA_ID") String areaKey) {
         return this.infoService.getAllHardware(areaKey)
@@ -214,6 +216,7 @@ public class CloudbootInfoController {
                 .collect(Collectors.toList());
     }
 
+    @ApiOperation(value = "改变某硬件模板可使用状态* ")
     @PutMapping(path = "/hardware/{HID}/switch/{ENABLED}")
     public String modifyHardware(@PathVariable(name = "HID") Integer hardwareId, @PathVariable(name = "ENABLED") Boolean enabled) {
         Optional<CloudbootHardwareEntity> entity = this.infoService.getHardwareDao().findById(hardwareId);
@@ -226,6 +229,7 @@ public class CloudbootInfoController {
         return "{}";
     }
 
+    @ApiOperation(value = "添加PXE模板*CB交互 ")
     @PostMapping(path = "/{AREA_ID}/pxe")
     public String addPxe(@PathVariable(name = "AREA_ID") String areaKey, @RequestBody CloudbootInfoMessage msg) {
         Optional<CloudbootTokenEntity> token = this.authenticationService.getCloudbootToken(areaKey);
@@ -242,6 +246,7 @@ public class CloudbootInfoController {
         return "{}";
     }
 
+    @ApiOperation(value = "修改PXE模板*CB交互 ")
     @PutMapping(path = "/{AREA_ID}/pxe/{ID}")
     public String updatePxe(@PathVariable(name = "AREA_ID") String areaKey, @PathVariable(name = "ID") Integer id, @RequestBody CloudbootInfoMessage msg) {
         Optional<CloudbootTokenEntity> token = this.authenticationService.getCloudbootToken(areaKey);
@@ -259,6 +264,7 @@ public class CloudbootInfoController {
         return "{}";
     }
 
+    @ApiOperation(value = "获得某区域所有pxe模板列表* ")
     @GetMapping(path = "/{AREA_ID}/pxe")
     public List<TemplateMessage> getAreaPXE(@PathVariable(name = "AREA_ID") String areaKey) {
         return this.infoService.getAllPXE(areaKey)
@@ -267,6 +273,7 @@ public class CloudbootInfoController {
                 .collect(Collectors.toList());
     }
 
+    @ApiOperation(value = "修改PXE文件可使用状态* ")
     @PutMapping(path = "/pxe/{PID}/switch/{ENABLED}")
     public String modifyPXE(@PathVariable(name = "PID") Integer pxeId, @PathVariable(name = "ENABLED") Boolean enabled) {
         Optional<CloudbootPXEEntity> entity = this.infoService.getPXEDao().findById(pxeId);
@@ -279,6 +286,7 @@ public class CloudbootInfoController {
         return "{}";
     }
 
+    @ApiOperation(value = "添加操作系统模板*CB交互 ")
     @PostMapping(path = "/{AREA_ID}/operation_system")
     public String addOperationSystem(@PathVariable(name = "AREA_ID") String areaKey, @RequestBody CloudbootInfoMessage msg) {
         Optional<CloudbootTokenEntity> token = this.authenticationService.getCloudbootToken(areaKey);
@@ -295,6 +303,7 @@ public class CloudbootInfoController {
         return "{}";
     }
 
+    @ApiOperation(value = "修改操作系统模板*CB交互 ")
     @PutMapping(path = "/{AREA_ID}/operation_system/{ID}")
     public String addOperationSystem(@PathVariable(name = "AREA_ID") String areaKey, @PathVariable(name = "ID") Integer id, @RequestBody CloudbootInfoMessage msg) {
         Optional<CloudbootTokenEntity> token = this.authenticationService.getCloudbootToken(areaKey);
@@ -312,6 +321,7 @@ public class CloudbootInfoController {
         return "{}";
     }
 
+    @ApiOperation(value = "修改操作系统模板*CB交互 ")
     @GetMapping(path = "/{AREA_ID}/operation_system")
     public List<TemplateMessage> getAreaOperationSystem(@PathVariable(name = "AREA_ID") String areaKey) {
         return this.infoService.getAllOperationSystem(areaKey)

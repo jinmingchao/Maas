@@ -56,21 +56,22 @@ public class InstanceServiceImpl implements InstanceService {
     @Override
     public void syncDiscoveryInstance(String areaKey) {
 
-        Optional<CloudbootTokenEntity> token = this.authenticationService.getCloudbootToken(areaKey);
+        Optional<CloudbootTokenEntity> token = this.authenticationService.getCloudbootToken(areaKey);//获得指定区域的token
         if (!token.isPresent()) {
             this.loggerService.error(logFactory.product()
                     .how(LogHow.CALL).what(String.format("schedule sync [area: %s] discovery instances failed", areaKey)).why("Token not exist").build());
             return;
         }
 
-        Set<String> updateSN = new HashSet<>();
-        this.baremetalService.getDiscoveryInfos(token.get()).forEach(info -> {
+        Set<String> updateSN = new HashSet<>();//set 用来存新更新设备的SN
+        this.baremetalService.getDiscoveryInfos(token.get()).forEach(info -> {//http请求CB获得JSONList: CloudbootDiscoveryInfo
             updateSN.add(info.getSn());
 
-            Optional<InstanceEntity> instance = this.instanceDao.findById(info.getSn());
+            Optional<InstanceEntity> instance = this.instanceDao.findById(info.getSn());//根据sn在本地db中找到设备对象
             if (instance.isPresent()) {
-                instance.get().transferCloudbootDiscoveryInfo(info, areaKey);
-                this.instanceDao.saveAndFlush(instance.get());
+                instance.get().transferCloudbootDiscoveryInfo(info, areaKey);//将areakey和info中信息装配到instance中
+                this.instanceDao.saveAndFlush(instance.get());//刷新装配好的instance到本地库
+
             } else {
                 InstanceEntity newlyInstance = new InstanceEntity();
                 newlyInstance.transferCloudbootDiscoveryInfo(info, areaKey);

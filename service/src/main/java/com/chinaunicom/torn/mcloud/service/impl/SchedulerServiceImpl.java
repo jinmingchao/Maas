@@ -85,6 +85,7 @@ public class SchedulerServiceImpl implements SchedulerService {
         CloudbootAreaEntity filter = new CloudbootAreaEntity();
         filter.setEnabled(true);
 
+
         this.cloudbootAreaDao.findAll(Example.of(filter)).forEach(area -> {
             this.authenticationService.cloudbootLogin(area);
         });
@@ -113,10 +114,15 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         if (metadata.type().equals(CronJobType.SYNC_CLOUDBOOT)) {
             this.authenticationService.getAllCloudbootTokens()
-                .forEach(token -> {
+                .forEach(token -> { //对于每个cloudboot area, 都会对应启动4个定时任务
+//                    String id = token.getId();
+//                    long dalay = metadata.delay();
+
                     Optional<CloudbootAreaEntity> area = this.cloudbootAreaDao.findById(token.getId());
-                    long syncInstanceInterval = 24L * 60 * 60 * 1000;
+                    long interval = area.get().getSyncInstanceInterval();
+                    long syncInstanceInterval = 24L * 60 * 60 * 1000; // one day
                     try {
+                        //设置定时任务时间,如果用户没有设置的话,执行定时任务的时间就默认为一天.
                         if (area.isPresent() && area.get().getSyncInstanceInterval() != null) {
                             syncInstanceInterval = area.get().getSyncInstanceInterval();
                         }

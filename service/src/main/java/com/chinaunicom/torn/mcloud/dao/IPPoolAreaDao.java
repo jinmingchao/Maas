@@ -26,4 +26,5 @@ public interface IPPoolAreaDao extends JpaRepository<IPPoolAreaEntity, Integer> 
     @Transactional
     void deleteById(Integer id);
 
+
 }

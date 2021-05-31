@@ -75,6 +75,7 @@ public class AreaZoneServiceImpl implements AreaZoneService {
 
     public List<CloudbootAreaEntity> fetchAllCloud() {
         return this.cloudDao.findAll();
+
 //                .stream()
 //                .filter(cloudbootAreaEntity ->
 //                        this.permissionService.checkPermission(
