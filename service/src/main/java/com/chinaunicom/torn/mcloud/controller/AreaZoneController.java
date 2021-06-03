@@ -31,7 +31,7 @@ public class AreaZoneController {
     @Autowired
     private AreaZoneService poolService;
 
-    @ApiOperation(value = "获取所有 cloudBoot* ")
+    @ApiOperation(value = "获取所有 ")
     @GetMapping("fetch-cloud/list")
     public List<CloudbootAreaEntity> fetchAllCloud() {
         return this.poolService.fetchAllCloud();

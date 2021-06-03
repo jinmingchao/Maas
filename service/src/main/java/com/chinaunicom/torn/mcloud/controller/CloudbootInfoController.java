@@ -321,7 +321,7 @@ public class CloudbootInfoController {
         return "{}";
     }
 
-    @ApiOperation(value = "修改操作系统模板*CB交互 ")
+    @ApiOperation(value = "获取操作系统模板* ")
     @GetMapping(path = "/{AREA_ID}/operation_system")
     public List<TemplateMessage> getAreaOperationSystem(@PathVariable(name = "AREA_ID") String areaKey) {
         return this.infoService.getAllOperationSystem(areaKey)
@@ -330,6 +330,7 @@ public class CloudbootInfoController {
                 .collect(Collectors.toList());
     }
 
+    @ApiOperation(value = "修改操作系统模板可用状态* ")
     @PutMapping(path = "/operation_system/{OSID}/switch/{ENABLED}")
     public String modifyOpertionSystem(@PathVariable(name = "OSID") Integer osId, @PathVariable(name = "ENABLED") Boolean enabled) {
         Optional<CloudbootOperationSystemEntity> entity = this.infoService.getOperationSystemDao().findById(osId);
@@ -342,6 +343,7 @@ public class CloudbootInfoController {
         return "{}";
     }
 
+    @ApiOperation(value = "修改操作系统模板可用状态* ")
     @GetMapping(path = "/area")
     public List<SimpleAreaMessage> getAllArea() {
         String curUser = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -351,6 +353,7 @@ public class CloudbootInfoController {
                 .collect(Collectors.toList());
     }
 
+    @ApiOperation(value = "同步某区域的pxe,硬件信息,操作系统到本地数据库*CB交互 ")
     @PutMapping(path = "/{AREA_ID}/sync")
     public String syncInfo(@PathVariable(name = "AREA_ID") String areaKey) {
         this.loggerService.operationLog(CloudbootInfoController.logFactory.product().how("webapi").what("/api/area/post-area").build());
@@ -362,24 +365,27 @@ public class CloudbootInfoController {
         return "{}";
     }
 
-
+    @ApiOperation(value = "获得所有硬件模板* ")
     @GetMapping(path = "/hardware_template")
     public List<CloudbootHardwareTemplateEntity> getHardwareTemplate() {
         return this.infoService.getHardwareTemplateDao().findAll();
     }
 
+    @ApiOperation(value = "添加典配模板* ")
     @PostMapping(path = "/hardware_template")
     public String postHardwareTemplate(@RequestBody CloudbootHardwareTemplateEntity entity) {
         this.infoService.getHardwareTemplateDao().saveAndFlush(entity);
         return "{}";
     }
 
+    @ApiOperation(value = "删除典配模板* ")
     @DeleteMapping(path = "/hardware_template/{ID}")
     public String deleteHardwareTemplate(@PathVariable(name = "ID") Integer id) {
         this.infoService.getHardwareTemplateDao().deleteById(id);
         return "{}";
     }
 
+    @ApiOperation(value = "克隆硬件模板* ")
     @PostMapping(path = "/{AREA_ID}/hardware")
     public CloudbootResultStatusInfo addHardware(@PathVariable(name = "AREA_ID") String areaKey, @RequestBody CloudbootAddHardwarePayload payload) {
         Optional<CloudbootTokenEntity> token = this.authenticationService.getCloudbootToken(areaKey);
@@ -394,6 +400,7 @@ public class CloudbootInfoController {
         return this.baremetalService.addHardware(payload, token.get());
     }
 
+    @ApiOperation(value = "根据ID获取典配模板* ")
     @GetMapping(path = "/hardware/{ID}/template")
     public CloudbootHardwareTemplateEntity getHardwareTpl(@PathVariable(name = "ID") Integer id) {
         Optional<CloudbootHardwareEntity> hardware = this.infoService.getHardwareDao().findById(id);
@@ -408,6 +415,7 @@ public class CloudbootInfoController {
         return template;
     }
 
+    @ApiOperation(value = "根据硬件信息ID修改硬件信息* ")
     @PutMapping(path = "/hardware/{ID}")
     public CloudbootResultStatusInfo updateHardware(@PathVariable(name = "ID") Integer id, @RequestBody CloudbootAddHardwarePayload payload) {
         Optional<CloudbootHardwareEntity> hardware = this.infoService.getHardwareDao().findById(id);
