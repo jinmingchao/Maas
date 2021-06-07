@@ -68,6 +68,7 @@ public class InstanceServiceImpl implements InstanceService {
             updateSN.add(info.getSn());
 
             Optional<InstanceEntity> instance = this.instanceDao.findById(info.getSn());//根据sn在本地db中找到设备对象
+            //无论如何都会把每个搜索到的对象添加到本地数据库中,已经有的对象会进行更新/覆盖操作
             if (instance.isPresent()) {
                 instance.get().transferCloudbootDiscoveryInfo(info, areaKey);//将areakey和info中信息装配到instance中
                 this.instanceDao.saveAndFlush(instance.get());//刷新装配好的instance到本地库

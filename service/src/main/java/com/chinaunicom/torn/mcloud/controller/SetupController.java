@@ -53,22 +53,22 @@ public class SetupController {
 
         this.installService.createBatch(message.getName(), message.getAreaId(), message.getInstances()
                 .stream()
-                .filter(instance -> {
+                .filter(instance -> {//java stream 过滤list
                     Optional<InstanceEntity> result = this.instanceService.getInstanceDao().findById(instance.getSn());
-                    if (!result.isPresent()) {
+                    if (!result.isPresent()) {//查看机器是否还在运行
                         this.loggerService.warn(logFactory.product()
                                 .what("distribute ignore sn: " + instance.getSn()).build());
                         return false;
                     }
-                    if (result.get().getDistributed()) {
+                    if (result.get().getDistributed()) {//查看机器是否被分发
                         this.loggerService.warn(logFactory.product()
                                 .what("distribute ignore sn: " + instance.getSn() + " because distributed").build());
 
                     }
-                    return !result.get().getDistributed();
+                    return !result.get().getDistributed();//过滤留下所有没有被分配的机器
                 })
-                .map(instance -> instance.transferInstallInstanceEntity())
-                .collect(Collectors.toList()));
+                .map(instance -> instance.transferInstallInstanceEntity())//转化成install instance entity
+                .collect(Collectors.toList()));//入参list转化完毕
 
         return "{}";
     }
@@ -76,13 +76,13 @@ public class SetupController {
     @PostMapping(path = "/install")
     public List<InstallResultMessage> install(@RequestBody List<String> sn) {
         sn.forEach(item -> this.loggerService.operationLog(SetupController.logFactory.product().how("webapi").what("install[" + item + "]: /install").build()));
-
+        //为啥是list?会有两个sn一样的？
         List<InstanceEntity> instances = this.instanceService.getInstanceDao().findAllById(sn);
         if (instances.isEmpty()) {
             return new ArrayList<>();
         }
         String areaId = instances.get(0).getAreaId();
-        if (instances.stream().anyMatch(instance -> !instance.getAreaId().equals(areaId))) {
+        if (instances.stream().anyMatch(instance -> !instance.getAreaId().equals(areaId))) {//第一个instance的areaId是正确的, 如果得到另外一个不同areaId相同sn的设备,则判定存在2个属地的设备,装机失败
             InstallResultMessage errorMessage = new InstallResultMessage();
             errorMessage.setStatus("failure");
             errorMessage.setMessage("装机设备中存在两个及两个以上属地的设备");

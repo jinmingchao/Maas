@@ -127,7 +127,7 @@ public class InstallServiceImpl implements InstallService {
     @Override
     public List<InstallResultMessage> install(List<String> sn) {
         // 根据属地分类设备，并筛选掉不可装机的部分设备
-        Map<String, List<CloudbootAddDeviceInstancePayload>> mapper = new HashMap<>();
+        Map<String, List<CloudbootAddDeviceInstancePayload>> mapper = new HashMap<>();// key: areaId value: list<CloudbootAddDeviceInstancePayload>
 
         this.instanceDao.findAllById(sn)
             .stream()
@@ -136,10 +136,10 @@ public class InstallServiceImpl implements InstallService {
                     this.loggerService.info(logFactory.product()
                             .how(LogHow.CALL).what("uninstallable, ignore instance sn: " + instance.getSn() + " area: " + instance.getAreaId()).build());
                     instance.setStatus("不可装机");
-                    this.instanceDao.saveAndFlush(instance);
+                    this.instanceDao.saveAndFlush(instance);//更新instance状态到不可装机
                 }
                 return instance.getInstallable();
-            })
+            })//留下所有installable == true的
             .forEach(instance -> {
                 if (!mapper.containsKey(instance.getAreaId())) {
                     this.loggerService.info(logFactory.product()
@@ -169,19 +169,19 @@ public class InstallServiceImpl implements InstallService {
             // 拆解批量安装 变更为单台安装
             payloads.forEach(payload -> {
                 Optional<InstanceEntity> instance = this.instanceDao.findById(payload.getSn());
-                List<CloudbootOperationPayload> restartPayload = new ArrayList<>(1);
+                List<CloudbootOperationPayload> restartPayload = new ArrayList<>(1);//生成一个operationPayload对象,里面有sn,oobip,oob_un,oob_pwd
                 restartPayload.add(instance.get().generateCloudbootOperationPayload());
-                CloudbootResultStatusInfo restartStatus = this.baremetalService.restartFromPXE(restartPayload, token.get());
+                CloudbootResultStatusInfo restartStatus = this.baremetalService.restartFromPXE(restartPayload, token.get());//重启机器
                 if (!restartStatus.getStatus().equals("success")) {
-                    if (instance.isPresent()) {
+                    if (instance.isPresent()) {//如果设备存在？
                         instance.get().setInstallable(true);
                         instance.get().setInstalled(true);
                         instance.get().setStatus("装机失败");
 
                         this.instanceInstallOpLogDao.saveAndFlush(instance.get().generateOpLog("system", InstanceInstallOpType.INSTALL_FAILURE));
-                        this.instanceDao.saveAndFlush(instance.get());
+                        this.instanceDao.saveAndFlush(instance.get());//更新设备状态
                     }
-                    result.add(new InstallResultMessage(areaKey, restartStatus));
+                    result.add(new InstallResultMessage(areaKey, restartStatus));//添加该组装机状态
 
                     return;
                 }
@@ -201,7 +201,7 @@ public class InstallServiceImpl implements InstallService {
                     }
                 }
 
-                result.add(new InstallResultMessage(areaKey, resultStatusInfo));
+                result.add(new InstallResultMessage(areaKey, resultStatusInfo));//添加该组装机状态
             });
             
             List<InstanceEntity> installed = this.instanceDao.findAllById(payloads.stream().map(payload -> payload.getSn()).collect(Collectors.toList()));
@@ -210,7 +210,7 @@ public class InstallServiceImpl implements InstallService {
                 //installedInstance.setInstallable(false);
                 installedInstance.setStatus("等待装机");
 
-                this.installingService.addInstance(installedInstance);
+                this.installingService.addInstance(installedInstance);//所有
             });
             this.instanceDao.saveAll(installed);
             this.instanceDao.flush();

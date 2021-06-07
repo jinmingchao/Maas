@@ -38,7 +38,7 @@ public class AreaZoneController {
     }
 
     @ApiOperation(value = "创建cloudArea* ")
-    @PostMapping(path="/post-area", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path="post-area", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public String createCloudArea(@RequestBody CloudbootAreaEntity area) {
         this.loggerService.operationLog(AreaZoneController.logFactory.product().how("webapi").what("/api/area/post-area").build());
